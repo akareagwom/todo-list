@@ -1,10 +1,7 @@
 import React from 'react';
 
-interface Props {
-  
-}
 
-const Navbar: React.FC<Props> = ({  }) => {
+const Navbar = () => {
   return (
     <div className='bg-white shadow-xl text-[#1C1D22] text-[20px] font-700 font-bold  '>
       <div className="flex justify-between p-4">
