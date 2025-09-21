@@ -5,12 +5,13 @@ import { MdOutlineInsertChart } from "react-icons/md";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { BiSliderAlt, BiDotsHorizontal, BiPlus } from "react-icons/bi";
 import { ProjectMenu, TaskMenu } from '../uicomponents/Dropdown';
+import ThemeToggle from '../uicomponents/Toggle';
 
 
 const SideBar = () => {
   return (
-    <div className='bg-white w-[408px] shadow flex'>
-      <div className="w-[90px] p-4 bg-[#1C1D22]">
+    <div className=' w-[408px] shadow flex'>
+      <div className="w-[90px] text-[#FFFFFF] p-4 bg-[#1C1D22]">
         <BiDotsHorizontal />
 
         <div className="flex flex-col justify-between w-auto h-auto items-center ">
@@ -63,6 +64,9 @@ const SideBar = () => {
         <div className="flex  items-center  justify-between py-4">
           <h1>Messenger</h1>
           <div className=""></div>
+        </div>
+        <div className="mt-[50%]">
+          <ThemeToggle/>
         </div>
       </div>
     </div>
