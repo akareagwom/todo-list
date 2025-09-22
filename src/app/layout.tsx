@@ -5,6 +5,14 @@ import "./globals.css";
 import SideBar from "./components/SideBar";
 import Navbar from "./components/navbar";
 
+import { Exo } from "next/font/google";
+
+const exo = Exo({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"], // choose the weights you need
+  variable: "--font-exo",
+});
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -26,12 +34,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={exo.variable} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <div className="flex justify w-[100%]">
+          <div className="flex font-exo justify w-[100%]">
             <SideBar />
             <div className="w-[1156px]">
               <Navbar/>
