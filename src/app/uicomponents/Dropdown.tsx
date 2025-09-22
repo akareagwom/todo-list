@@ -55,13 +55,13 @@ export const TaskMenu = () => {
     const [options, setOptions] = useState(false);
 
     return (
-        <div className="w-full">
+        <div className="w-full ">
             <button
                 onClick={() => setOptions(!options)} >
                 <IoChevronForward />
             </button>
             {options &&
-                <div className="relative right-25  mt-2">
+                <div className="relative z-1 right-25  mt-2">
                    
                         
                         <div className="border-l-2">
