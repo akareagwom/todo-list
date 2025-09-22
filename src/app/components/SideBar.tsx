@@ -6,13 +6,29 @@ import { AiOutlineCloudUpload } from "react-icons/ai";
 import { BiSliderAlt, BiDotsHorizontal, BiPlus } from "react-icons/bi";
 import { ProjectMenu, TaskMenu } from '../uicomponents/Dropdown';
 import ThemeToggle from '../uicomponents/Toggle';
+import Image from "next/image";
 
 
 const SideBar = () => {
   return (
     <div className=' w-[408px] shadow flex'>
       <div className="w-[90px] text-[#FFFFFF] p-4 bg-[#1C1D22]">
-        <BiDotsHorizontal />
+        <div className="flex flex-col items-center my-4 gap-6">
+          <Image
+          className='w-6'
+            src="/Ovals.svg"
+            alt="Ovals"
+            width={50}     
+            height={50}     
+          />
+          <Image 
+          className='w-6'
+          alt='assets' 
+          src="Logo.svg"
+            width={50}     
+            height={50}
+          />
+        </div>
 
         <div className="flex flex-col justify-between w-auto h-auto items-center ">
           <BsGrid className=' text-2xl font-bold my-4' />
@@ -44,15 +60,15 @@ const SideBar = () => {
 
         <div className="flex w-full items-baseline  justify-between py-4">
           <h1>Projects</h1>
-          <div className="">
-            <ProjectMenu/>
+          <div className="relative">
+            <ProjectMenu />
           </div>
         </div>
 
         <div className="flex  w-full items-baseline  justify-between py-4">
           <h1>Task</h1>
           <div className="">
-          <TaskMenu/>
+            <TaskMenu />
           </div>
         </div>
 
@@ -66,7 +82,7 @@ const SideBar = () => {
           <div className=""></div>
         </div>
         <div className="mt-[50%]">
-          <ThemeToggle/>
+          <ThemeToggle />
         </div>
       </div>
     </div>

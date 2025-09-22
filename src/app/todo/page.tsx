@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BiPlus } from "react-icons/bi";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { GrAttachment } from "react-icons/gr";
 import { MdOutlineMessage } from "react-icons/md";
-import RotatingCube from "../uicomponents/RotatingCube"
+import RotatingCube from "../uicomponents/RotatingCube";
 import {
   DndContext,
   closestCenter,
@@ -49,7 +49,7 @@ export default function KanbanBoard() {
 
   //cube state
   const [cubeActive, setCubeActive] = useState(false);
-   const [isAddingTask, setIsAddingTask] = useState(false);
+  const [isAddingTask, setIsAddingTask] = useState(false);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,6 +59,23 @@ export default function KanbanBoard() {
     description: "",
     progress: 0,
   });
+
+  //  Load saved tasks from localStorage
+  useEffect(() => {
+    const savedColumns = localStorage.getItem("columns");
+    if (savedColumns) {
+      try {
+        setColumns(JSON.parse(savedColumns));
+      } catch {
+        console.error("Invalid data in localStorage");
+      }
+    }
+  }, []);
+
+  // Save tasks to localStorage whenever columns change
+  useEffect(() => {
+    localStorage.setItem("columns", JSON.stringify(columns));
+  }, [columns]);
 
   //  Handle drag
   function handleDragEnd(event: DragEndEvent) {
@@ -105,7 +122,7 @@ export default function KanbanBoard() {
     }
   }
 
-const [cubeCallback, setCubeCallback] = useState<() => void>();
+  const [cubeCallback, setCubeCallback] = useState<() => void>();
 
   //  Handle form submit
   function handleSubmit(e: React.FormEvent) {
@@ -132,19 +149,23 @@ const [cubeCallback, setCubeCallback] = useState<() => void>();
     // Pass this callback to RotatingCube
     setCubeCallback(() => onAnimationComplete);
 
-    // setColumns({
-    //   ...columns,
-    //   [activeColumn]: [newTask, ...columns[activeColumn]],
-    // });
-
     setFormData({ title: "", description: "", progress: 0 });
     setIsModalOpen(false);
+  }
+
+  function addTask(newTask: string) {
+    setFormData((prev) => ({
+      ...prev,
+      title: "New title",
+      description: prev.description,
+      progress: prev.progress,
+    }));
   }
 
   return (
     <>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          {cubeActive && cubeCallback && <RotatingCube onAnimationComplete={cubeCallback} />}
+        {cubeActive && cubeCallback && <RotatingCube onAnimationComplete={cubeCallback} />}
         <div className="grid grid-cols-3 gap-4 p-4">
           {Object.entries(columns).map(([colId, tasks]) => (
             <div key={colId} className="rounded-xl p-3 border-2 border-[#1C1D2214] border-dashed">
@@ -160,9 +181,9 @@ const [cubeCallback, setCubeCallback] = useState<() => void>();
                   className=" flex gap-2 items-center px-2 py-1 text-sm "
                 >
                   <div className="rounded-[50%] p-1 bg-[#1C1D2214]">
-                    <BiPlus className='text-[#1C1D22]' />
+                    <BiPlus className="text-[#1C1D22]" />
                   </div>
-                  <p className="font-600 font-semibold text-[14px] " >Add new task</p>
+                  <p className="font-600 font-semibold text-[14px] ">Add new task</p>
                 </button>
               </div>
 
@@ -171,7 +192,7 @@ const [cubeCallback, setCubeCallback] = useState<() => void>();
                 strategy={verticalListSortingStrategy}
               >
                 {tasks.map((task) => (
-                  <SortableTask key={task.id} task={task}  />
+                  <SortableTask key={task.id} task={task} />
                 ))}
               </SortableContext>
             </div>
@@ -247,7 +268,6 @@ function SortableTask({ task, taskdata }: { task: Task; taskdata?: TaskData }) {
     transition,
   };
 
-  
   const taskStatus = taskdata?.status ?? "todo";
 
   // Progress bar colors
@@ -264,9 +284,8 @@ function SortableTask({ task, taskdata }: { task: Task; taskdata?: TaskData }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="bg-white rounded-lg shadow p-3 mb-2 cursor-grab"
+      className=" rounded-lg shadow p-3 mb-2 cursor-grab"
     >
-      
       <div className="flex justify-between items-center">
         <h3 className="font-medium">{task.title}</h3>
         <div className="rounded-[50%] border-2 border-[#1C1D2214] p-1">
@@ -305,5 +324,3 @@ function SortableTask({ task, taskdata }: { task: Task; taskdata?: TaskData }) {
     </div>
   );
 }
-
-

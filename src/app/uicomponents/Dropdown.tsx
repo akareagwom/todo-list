@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import { IoChevronForward } from "react-icons/io5";
+import { IoChevronForward, IoChevronDown } from "react-icons/io5";
 import { MdHorizontalRule } from "react-icons/md";
 import { PiLineVertical } from "react-icons/pi";
 
@@ -8,10 +8,14 @@ export const ProjectMenu = () => {
     const [options, setOptions] = useState(false);
 
     return (
-        <div className="w-full">
+        <div className="">
             <button
+                className=""
                 onClick={() => setOptions(!options)} >
-                <IoChevronForward />
+                    {options ?
+                    <IoChevronDown/>:
+                    <IoChevronForward />
+                    }
             </button>
             {options &&
                 <div className="relative right-25  mt-2">
@@ -58,7 +62,11 @@ export const TaskMenu = () => {
         <div className="w-full ">
             <button
                 onClick={() => setOptions(!options)} >
-                <IoChevronForward />
+                 {options ?
+                    <IoChevronDown/>
+                    :
+                    <IoChevronForward />
+                    }
             </button>
             {options &&
                 <div className="relative z-1 right-25  mt-2">
