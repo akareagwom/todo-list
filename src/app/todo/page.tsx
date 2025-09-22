@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { BiPlus } from "react-icons/bi";
+import { FiMoreHorizontal } from "react-icons/fi";
+import { TfiMenuAlt } from "react-icons/tfi";
+import { GrAttachment } from "react-icons/gr";
+import { MdOutlineMessage } from "react-icons/md";
+import RotatingCube from "../uicomponents/RotatingCube"
 import {
   DndContext,
   closestCenter,
@@ -21,6 +27,11 @@ type Task = {
   progress: number;
 };
 
+interface TaskData {
+  id: string;
+  status: "todo" | "inprogress" | "done";
+}
+
 const initialTasks = {
   todo: [
     { id: "1", title: "Design UI", description: "Work on landing page", progress: 40 },
@@ -36,6 +47,10 @@ const initialTasks = {
 export default function KanbanBoard() {
   const [columns, setColumns] = useState(initialTasks);
 
+  //cube state
+  const [cubeActive, setCubeActive] = useState(false);
+   const [isAddingTask, setIsAddingTask] = useState(false);
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeColumn, setActiveColumn] = useState<keyof typeof columns>("todo");
@@ -45,7 +60,7 @@ export default function KanbanBoard() {
     progress: 0,
   });
 
-  // ✅ Handle drag
+  //  Handle drag
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over) return;
@@ -90,7 +105,9 @@ export default function KanbanBoard() {
     }
   }
 
-  // ✅ Handle form submit
+const [cubeCallback, setCubeCallback] = useState<() => void>();
+
+  //  Handle form submit
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const newTask: Task = {
@@ -100,10 +117,25 @@ export default function KanbanBoard() {
       progress: formData.progress,
     };
 
-    setColumns({
-      ...columns,
-      [activeColumn]: [newTask, ...columns[activeColumn]],
-    });
+    setCubeActive(true);
+    const onAnimationComplete = () => {
+      setColumns({
+        ...columns,
+        [activeColumn]: [newTask, ...columns[activeColumn]],
+      });
+      setIsAddingTask(false);
+      setCubeActive(false);
+      setFormData({ title: "", description: "", progress: 0 });
+      setIsModalOpen(false);
+    };
+
+    // Pass this callback to RotatingCube
+    setCubeCallback(() => onAnimationComplete);
+
+    // setColumns({
+    //   ...columns,
+    //   [activeColumn]: [newTask, ...columns[activeColumn]],
+    // });
 
     setFormData({ title: "", description: "", progress: 0 });
     setIsModalOpen(false);
@@ -112,11 +144,12 @@ export default function KanbanBoard() {
   return (
     <>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          {cubeActive && cubeCallback && <RotatingCube onAnimationComplete={cubeCallback} />}
         <div className="grid grid-cols-3 gap-4 p-4">
           {Object.entries(columns).map(([colId, tasks]) => (
             <div key={colId} className="rounded-xl p-3 border-2 border-[#1C1D2214] border-dashed">
               <div className="flex justify-between items-center mb-2">
-                <h2 className="font-semibold text-lg capitalize">
+                <h2 className=" text-[#1C1D2280] text-[16px] capitalize">
                   {colId.replace(/([A-Z])/g, " $1")}
                 </h2>
                 <button
@@ -124,9 +157,12 @@ export default function KanbanBoard() {
                     setActiveColumn(colId as keyof typeof columns);
                     setIsModalOpen(true);
                   }}
-                  className="bg-blue-500 text-white px-2 py-1 text-sm rounded"
+                  className=" flex gap-2 items-center px-2 py-1 text-sm "
                 >
-                  + Add
+                  <div className="rounded-[50%] p-1 bg-[#1C1D2214]">
+                    <BiPlus className='text-[#1C1D22]' />
+                  </div>
+                  <p className="font-600 font-semibold text-[14px] " >Add new task</p>
                 </button>
               </div>
 
@@ -135,7 +171,7 @@ export default function KanbanBoard() {
                 strategy={verticalListSortingStrategy}
               >
                 {tasks.map((task) => (
-                  <SortableTask key={task.id} task={task} />
+                  <SortableTask key={task.id} task={task}  />
                 ))}
               </SortableContext>
             </div>
@@ -201,7 +237,7 @@ export default function KanbanBoard() {
   );
 }
 
-function SortableTask({ task }: { task: Task }) {
+function SortableTask({ task, taskdata }: { task: Task; taskdata?: TaskData }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: task.id,
   });
@@ -211,6 +247,17 @@ function SortableTask({ task }: { task: Task }) {
     transition,
   };
 
+  
+  const taskStatus = taskdata?.status ?? "todo";
+
+  // Progress bar colors
+  const progressColor =
+    taskStatus === "done"
+      ? "#FFA048"
+      : taskStatus === "inprogress"
+      ? "#FFA048"
+      : "#78D700";
+
   return (
     <div
       ref={setNodeRef}
@@ -219,15 +266,44 @@ function SortableTask({ task }: { task: Task }) {
       {...listeners}
       className="bg-white rounded-lg shadow p-3 mb-2 cursor-grab"
     >
-      <h3 className="font-medium">{task.title}</h3>
+      
+      <div className="flex justify-between items-center">
+        <h3 className="font-medium">{task.title}</h3>
+        <div className="rounded-[50%] border-2 border-[#1C1D2214] p-1">
+          <FiMoreHorizontal />
+        </div>
+      </div>
       <p className="text-sm text-gray-500">{task.description}</p>
-      <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+      <div className="flex justify-between py-2 items-center">
+        <div className=" text-[#1C1D2280] text-[14px] flex gap-2 items-center">
+          <TfiMenuAlt />
+          <p>Progress</p>
+        </div>
+        <p className="font-600 text-[14px]">{task.progress} /100</p>
+      </div>
+      <div className="mt-2 w-full bg-gray-200 rounded-full h-1">
         <div
-          className="bg-blue-500 h-2 rounded-full"
-          style={{ width: `${task.progress}%` }}
+          className="h-1 rounded"
+          style={{ width: `${task.progress}%`, backgroundColor: progressColor }}
         ></div>
+      </div>
+      <div className="py-4 flex justify-between items-center text-[14px]">
+        <p className="bg-[#888DA71A] text-[#888DA7] text-center p-1 w-[113px] rounded-[17px]">
+          22 Aug 2022
+        </p>
+        <div className="flex items-center gap-2 text-[#888DA7]">
+          <div className="flex items-center gap-1">
+            <MdOutlineMessage />
+            <p>7</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <GrAttachment />
+            <p>2</p>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
 

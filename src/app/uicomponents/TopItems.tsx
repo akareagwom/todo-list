@@ -5,7 +5,7 @@ import { FiMoreHorizontal } from "react-icons/fi";
 
 function TopItems() {
   return (
-    <div className='flex justify-between w-full border-b-1 items-center'>
+    <div className='flex justify-between w-full py-4 border-b-2 border-[#1C1D2214] items-center'>
         <div className='flex justify-between gap-4 items-center'>
             <div className="flex items-center gap-2">
                 <LuStretchHorizontal />
